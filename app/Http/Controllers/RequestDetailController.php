@@ -79,9 +79,10 @@ class RequestDetailController extends Controller
      * @param  \App\Models\RequestDetail  $requestDetail
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, RequestDetail $requestDetail)
+    public function update(Request $request,RequestForm $requestForm, RequestDetail $requestDetail)
     {
-        //
+        $requestDetail->update($request->all());
+        return new RequestDetailResource($requestDetail);
     }
 
     /**
@@ -90,8 +91,13 @@ class RequestDetailController extends Controller
      * @param  \App\Models\RequestDetail  $requestDetail
      * @return \Illuminate\Http\Response
      */
-    public function destroy(RequestDetail $requestDetail)
+    public function destroy(RequestForm $requestForm,RequestDetail $requestDetail)
     {
-        //
+        if ($requestDetail->request_form_id == $requestForm->id && $requestForm->status <= 1){
+            $requestDetail->delete();
+            return response(null,Response::HTTP_CREATED);
+        }else{
+            return response(null,Response::HTTP_NOT_FOUND);
+        }
     }
 }

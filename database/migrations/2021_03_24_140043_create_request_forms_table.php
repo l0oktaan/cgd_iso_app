@@ -14,32 +14,28 @@ class CreateRequestFormsTable extends Migration
     public function up()
     {
         Schema::create('request_forms', function (Blueprint $table) {
-            $table->smallIncrements('id');
-            // $table->smallInteger('user_id')->unsigned()->index();
-            $table->foreignId('user_id')->constrained('users')->onUpdate('cascade')->onDelete('cascade');
+            $table->id();
             $table->string('group_code',5);
             $table->smallInteger('year');
-            $table->tinyInteger('order_no');
+            $table->tinyInteger('order_no')->nullable();
             $table->date('created_date');
-            $table->string('request_no');
-            $table->tinyInteger('change_type');
-            $table->string('request_title',300);
-            $table->string('request_reason',300);
-            $table->string('document_relate',250);
-            $table->string('person_relate',250);
-            $table->string('system_relate',250);
-            $table->string('env_impact',250);
-            $table->string('system_impact',250);
-            $table->string('level_impact',190);
-            $table->date('begin_date');
+            $table->string('request_no')->nullable();
+            $table->tinyInteger('change_type')->nullable();
+            $table->string('request_title',300)->nullable();
+            $table->string('request_reason',300)->nullable();
+            $table->json('document_relate')->nullable();
+            $table->json('person_relate')->nullable();
+            $table->json('system_relate')->nullable();
+            $table->json('env_impact')->nullable();
+            $table->json('system_impact')->nullable();
+            $table->tinyInteger('level_impact')->nullable();
+            $table->date('begin_date')->nullable();
             $table->date('end_date')->nullable();
             $table->time('begin_time')->nullable();
             $table->time('end_time')->nullable();
             $table->tinyInteger('status');
-            $table->string('description',1000);
-            $table->date('updated_date');
-
-
+            $table->text('description')->nullable();
+            $table->date('updated_date')->nullable();
             $table->timestamps();
         });
     }

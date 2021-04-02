@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRequestDetailsTable extends Migration
+class CreateRequestFilesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateRequestDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('request_details', function (Blueprint $table) {
-            $table->smallIncrements('id');
-            $table->tinyInteger('order');
-            $table->tinyInteger('type');
-            $table->text('request_detail')->nullable();
-            $table->text('description')->nullable();
+        Schema::create('request_files', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('request_form_id')->constrained('request_forms');
+            $table->string('file_title');
+            $table->string('file_name');
+            $table->date('updated_date');
             $table->timestamps();
         });
     }
@@ -30,6 +30,6 @@ class CreateRequestDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('request_details');
+        Schema::dropIfExists('request_files');
     }
 }

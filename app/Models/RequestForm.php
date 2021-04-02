@@ -41,4 +41,11 @@ class RequestForm extends Model
     public function user(){
         return $this->belongsTo(User::class);
     }
+
+    public function document(){
+        return $this->hasOne(Document::class);
+    }
+    public function request_files(){
+        return $this->hasMany(RequestFile::class);
+    }
 }
