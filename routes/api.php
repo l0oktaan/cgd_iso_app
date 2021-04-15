@@ -3,9 +3,11 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\PolicyController;
 use App\Http\Controllers\AssetPeopleController;
 use App\Http\Controllers\RequestFileController;
 use App\Http\Controllers\RequestFormController;
+use App\Http\Controllers\PolicyDetailController;
 use App\Http\Controllers\RequestDetailController;
 use App\Http\Controllers\AssetEquipmentController;
 
@@ -31,6 +33,8 @@ Route::apiResources([
     '/request_forms/{request_form}/request_details' => RequestDetailController::class,
     '/request_forms/{request_form}/request_files' => RequestFileController::class,
     '/groups' => GroupController::class,
-    '/groups/{group}/asset_equipment' => AssetEquipmentController::class,
-    '/groups/{group}/asset_people' => AssetPeopleController::class,
+    '/groups/{group}/asset_equipments' => AssetEquipmentController::class,
+    '/groups/{group}/asset_peoples' => AssetPeopleController::class,
+    '/groups/{group}/policies' => PolicyController::class,
+    '/groups/{group}/policies/{policy}/policy_details' => PolicyDetailController::class,
 ]);

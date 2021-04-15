@@ -17,7 +17,6 @@ class RequestFormController extends Controller
      */
     public function index()
     {
-
         return RequestFormResource::collection(RequestForm::all());
     }
 

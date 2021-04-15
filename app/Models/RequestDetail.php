@@ -11,7 +11,6 @@ class RequestDetail extends Model
     protected $fillable = [
         'id',
         'request_form_id',
-        'order',
         'type',
         'request_detail',
         'description'

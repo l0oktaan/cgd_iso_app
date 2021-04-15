@@ -21,7 +21,6 @@ class CreateAssetPeopleTable extends Migration
             $table->foreignId('group_id')->constrained('groups')->onDelete('cascade');
             $table->json('people_tags');
             $table->string('description',250);
-
             $table->timestamps();
         });
     }

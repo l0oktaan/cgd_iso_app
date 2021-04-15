@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Group;
 use App\Models\AssetPeople;
 use Illuminate\Http\Request;
+use App\Http\Resources\AssetPeopleResource;
+use Symfony\Component\HttpFoundation\Response;
 
 class AssetPeopleController extends Controller
 {
@@ -12,9 +15,10 @@ class AssetPeopleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Group $group)
     {
-        //
+
+        return AssetPeopleResource::collection($group->asset_peoples()->get());
     }
 
     /**
@@ -33,9 +37,13 @@ class AssetPeopleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Group $group,Request $request)
     {
-        //
+        $people = new AssetPeople(($request->all()));
+        $group->asset_peoples()->save($people);
+        return response([
+            'data' => new AssetPeopleResource($people)
+        ],Response::HTTP_CREATED);
     }
 
     /**
@@ -46,7 +54,7 @@ class AssetPeopleController extends Controller
      */
     public function show(AssetPeople $assetPeople)
     {
-        //
+        return AssetPeopleResource::collection($assetPeople);
     }
 
     /**
@@ -67,9 +75,14 @@ class AssetPeopleController extends Controller
      * @param  \App\Models\AssetPeople  $assetPeople
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, AssetPeople $assetPeople)
+    public function update(Request $request,Group $group, AssetPeople $assetPeople)
     {
-        //
+        if ($group->id == $assetPeople->group_id){
+            $assetPeople->update($request->all());
+            return new AssetPeopleResource($assetPeople);
+        }else{
+            return response(null,Response::HTTP_NOT_FOUND);
+        }
     }
 
     /**
@@ -78,8 +91,13 @@ class AssetPeopleController extends Controller
      * @param  \App\Models\AssetPeople  $assetPeople
      * @return \Illuminate\Http\Response
      */
-    public function destroy(AssetPeople $assetPeople)
+    public function destroy(Group $group,AssetPeople $assetPeople)
     {
-        //
+        if ($group->id == $assetPeople->group_id){
+            $assetPeople->delete();
+            return response(null,Response::HTTP_CREATED);
+        }else{
+            return response(null,Response::HTTP_NOT_FOUND);
+        }
     }
 }

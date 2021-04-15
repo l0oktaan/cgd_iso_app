@@ -15,7 +15,6 @@ class CreateRequestDetailsTable extends Migration
     {
         Schema::create('request_details', function (Blueprint $table) {
             $table->smallIncrements('id');
-            $table->tinyInteger('order');
             $table->tinyInteger('type');
             $table->text('request_detail')->nullable();
             $table->text('description')->nullable();

@@ -4,27 +4,24 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AssetPeopleResource extends JsonResource
+class PolicyCollection extends JsonResource
 {
     /**
-     * Transform the resource into an array.
+     * Transform the resource collection into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array
      */
     public function toArray($request)
     {
+        $policy_detail = $this->whenLoaded('policy_details');
         return [
             'id' => $this->id,
-            'ip_address' => $this->ip_address,
-            'people_name' => $this->people_name,
-            'ldap_name' => $this->ldap_name,
-            'people_type' => $this->people_type,
             'group_id' => $this->group_id,
-            'org_name' => $this->org_name,
-            'people_tags' => $this->people_tags,
+            'policy_name' => $this->policy_name,
+            'policy_detail' => $policy_detail,
+            'updated_date' => $this->updated_date,
             'description' => $this->description
-
         ];
     }
 }

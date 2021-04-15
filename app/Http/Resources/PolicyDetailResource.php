@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class RequestDetailResource extends JsonResource
+class PolicyDetailResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -16,10 +16,12 @@ class RequestDetailResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'request_form_id' => $this->request_form_id,
-            'type' => $this->type,
-            'request_detail' => $this->request_detail,
-            'description' => $this->description
+            'policy_id' => $this->policy_id,
+            'source' => $this->source,
+            'destination' => $this->destination,
+            'service_port' => $this->service_port,
+            'tags' => $this->tags,
+            'updated_date' => $this->updated_date
         ];
     }
 }

@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Group;
+use App\Models\Policy;
 use Illuminate\Http\Request;
-use App\Models\AssetEquipment;
-use App\Http\Resources\GroupResource;
-use App\Http\Resources\AssetEquipmentResource;
+use App\Http\Resources\PolicyResource;
+use App\Http\Resources\PolicyCollection;
 use Symfony\Component\HttpFoundation\Response;
 
-class AssetEquipmentController extends Controller
+class PolicyController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,7 +19,14 @@ class AssetEquipmentController extends Controller
     public function index(Group $group)
     {
 
-        return AssetEquipmentResource::collection($group->asset_equipments()->get());
+        $policy = new Policy;
+        $policy = $group->policies()->with("policy_details")
+            ->get();
+
+
+            return PolicyResource::collection($policy);
+
+
     }
 
     /**
@@ -27,9 +34,9 @@ class AssetEquipmentController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Group $group)
+    public function create()
     {
-
+        //
     }
 
     /**
@@ -40,31 +47,39 @@ class AssetEquipmentController extends Controller
      */
     public function store(Group $group,Request $request)
     {
-        $equip = new AssetEquipment(($request->all()));
-        $group->asset_equipments()->save($equip);
-        return response([
-            'data' => new AssetEquipmentResource($equip)
-        ],Response::HTTP_CREATED);
+        $policies = new Policy($request->all());
+        $group->policies()->save($policies);
+        return new PolicyResource($policies);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\AssetEquipment  $assetEquipment
+     * @param  \App\Models\Policy  $policy
      * @return \Illuminate\Http\Response
      */
-    public function show(Group $group,AssetEquipment $assetEquipment)
+    public function show(Group $group,Policy $policy)
     {
-        return AssetEquipmentResource::collection($assetEquipment);
+
+            if ($group->id == $policy->group_id){
+                $p = policy::with("policy_details")
+                ->where('id',$policy->id)
+                ->get();
+                return PolicyCollection::collection($p);
+            }else{
+                return response(null,Response::HTTP_NOT_FOUND);
+            }
+
+
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\AssetEquipment  $assetEquipment
+     * @param  \App\Models\Policy  $policy
      * @return \Illuminate\Http\Response
      */
-    public function edit(AssetEquipment $assetEquipment)
+    public function edit(Policy $policy)
     {
         //
     }
@@ -73,30 +88,29 @@ class AssetEquipmentController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\AssetEquipment  $assetEquipment
+     * @param  \App\Models\Policy  $policy
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request,Group $group, AssetEquipment $assetEquipment)
+    public function update(Request $request,Group $group, Policy $policy)
     {
-        if ($group->id == $assetEquipment->group_id){
-            $assetEquipment->update($request->all());
-            return new AssetEquipmentResource($assetEquipment);
+        if ($group->id == $policy->group_id){
+            $policy->update($request->all());
+            return new PolicyResource($policy);
         }else{
             return response(null,Response::HTTP_NOT_FOUND);
         }
-
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\AssetEquipment  $assetEquipment
+     * @param  \App\Models\Policy  $policy
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Group $group,AssetEquipment $assetEquipment)
+    public function destroy(Group $group,Policy $policy)
     {
-        if ($group->id == $assetEquipment->group_id){
-            $assetEquipment->delete();
+        if ($group->id == $policy->group_id){
+            $policy->delete();
             return response(null,Response::HTTP_CREATED);
         }else{
             return response(null,Response::HTTP_NOT_FOUND);

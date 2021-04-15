@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Group extends Model
 {
-    use HasFactory;
+    // use HasFactory;
     protected $fillable = [
         'id',
         'group_name',
@@ -23,6 +23,10 @@ class Group extends Model
 
     public function asset_equipments(){
         return $this->hasMany(AssetEquipment::class);
+    }
+
+    public function policies(){
+        return $this->hasMany(Policy::class);
     }
 
 }

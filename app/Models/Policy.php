@@ -5,21 +5,18 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class AssetPeople extends Model
+class Policy extends Model
 {
     use HasFactory;
     protected $fillable = [
         'id',
-        'ip_address',
-        'ldap_name',
-        'people_name',
-        'people_type',
         'group_id',
-        'org_name',
-        'people_tags',
+        'policy_name',
+        'updated_date',
+        'updated_by',
         'description'
     ];
-    public function group(){
-        return $this->belongsTo(Group::class);
+    public function policy_details(){
+        return $this->hasMany(PolicyDetail::class);
     }
 }
