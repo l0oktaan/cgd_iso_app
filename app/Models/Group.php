@@ -29,4 +29,8 @@ class Group extends Model
         return $this->hasMany(Policy::class);
     }
 
+    public function user_details(){
+        return $this->hasMany(UserDetail::class);
+    }
+
 }

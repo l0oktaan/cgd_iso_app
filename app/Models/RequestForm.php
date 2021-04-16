@@ -12,6 +12,7 @@ class RequestForm extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'group_id',
         'group_code',
         'year',
         'order_no',

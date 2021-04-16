@@ -10,7 +10,7 @@ use App\Http\Controllers\RequestFormController;
 use App\Http\Controllers\PolicyDetailController;
 use App\Http\Controllers\RequestDetailController;
 use App\Http\Controllers\AssetEquipmentController;
-
+use App\Http\Controllers\UserDetailController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +29,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Route::Resource('/request_forms', RequestFormController::class);
 Route::apiResources([
+    '/user_details' => UserDetailController::class,
     '/request_forms' => RequestFormController::class,
     '/request_forms/{request_form}/request_details' => RequestDetailController::class,
     '/request_forms/{request_form}/request_files' => RequestFileController::class,
