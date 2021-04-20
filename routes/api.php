@@ -32,6 +32,8 @@ Route::apiResources([
     '/user_details' => UserDetailController::class,
     '/request_forms' => RequestFormController::class,
     '/request_forms/{request_form}/request_details' => RequestDetailController::class,
+    '/request_forms/{request_form}/request_details/{request_detail}/request_policies' => RequestPolicyController::class,
+    '/request_forms/{request_form}/request_details/{request_detail}/request_policies/{request_policy}/request_policy_details' => RequestPolicyDetailController::class,
     '/request_forms/{request_form}/request_files' => RequestFileController::class,
     '/groups' => GroupController::class,
     '/groups/{group}/asset_equipments' => AssetEquipmentController::class,

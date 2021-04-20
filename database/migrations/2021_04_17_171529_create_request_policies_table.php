@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRequestDetailsTable extends Migration
+class CreateRequestPoliciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateRequestDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('request_details', function (Blueprint $table) {
+        Schema::create('request_policies', function (Blueprint $table) {
             $table->id();
-            $table->tinyInteger('type');
-            $table->text('request_detail')->nullable();
-            $table->text('description')->nullable();
+            $table->string('policy_name',250);
+            $table->date('updated_date');
+            $table->string('description',300);
             $table->timestamps();
         });
     }
@@ -29,6 +29,6 @@ class CreateRequestDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('request_details');
+        Schema::dropIfExists('request_policies');
     }
 }
