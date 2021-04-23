@@ -22,6 +22,7 @@ class PolicyResource extends JsonResource
             'policy_name' => $this->policy_name,
             'policy_detail' => $policy_detail,
             'updated_date' => $this->updated_date,
+            'updated_by' => $this->updated_by,
             'description' => $this->description
         ];
     }

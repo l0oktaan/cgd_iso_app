@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\RequestForm;
 use Illuminate\Http\Request;
 use App\Models\RequestDetail;
+use App\Models\RequestPolicyDetail;
 use App\Http\Resources\RequestDetailResource;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -40,11 +41,29 @@ class RequestDetailController extends Controller
      */
     public function store(RequestForm $request_form, Request $request)
     {
-        $request_detail = new RequestDetail($request->all());
-        $request_form->request_details()->save($request_detail);
-        return response([
-            'data' => new RequestDetailResource($request_detail)
-        ],Response::HTTP_CREATED);
+        // return $request->policy;
+        try {
+            $request_detail = new RequestDetail($request->all());
+            $request_form->request_details()->save($request_detail);
+
+            if ($request->has(['policy'])){
+                $detail = $request->policy;
+                for ($i=0;$i<count($detail);$i++){
+                    $policy = new RequestPolicyDetail;
+                    $policy->source = $detail[$i]["source"];
+                    $policy->destination = $detail[$i]["destination"];
+                    $policy->service_port = $detail[$i]["service_port"];
+                    $policy->tags = $detail[$i]["tags"];
+                    $request_detail->request_policy_details()->save($policy);
+                }
+            }
+            return response([
+                'data' => new RequestDetailResource($request_detail)
+            ],Response::HTTP_CREATED);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
     }
 
     /**

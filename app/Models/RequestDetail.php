@@ -20,4 +20,7 @@ class RequestDetail extends Model
     public function request_form(){
         return $this->belongsTo(RequestForm::class);
     }
+    public function request_policy_details(){
+        return $this->hasMany(RequestPolicyDetail::class);
+    }
 }

@@ -9,17 +9,17 @@ class RequestPolicy extends Model
 {
     use HasFactory;
     protected $fillable = [
-        'id',
-        'request_detail_id',
-        'policy_name',
-        'updated_date',
-        'description'
+        // 'id',
+        // 'request_detail_id',
+        // 'policy_name',
+        // 'updated_date',
+        // 'description'
     ];
-    public function request_policy_details(){
-        return $this->hasMany(RequestPolicyDetail::class);
-    }
+    // public function request_policy_details(){
+    //     return $this->hasMany(RequestPolicyDetail::class);
+    // }
 
-    public function request_detail(){
-        return $this->belongsTo(RequestDetail::class);
-    }
+    // public function request_detail(){
+    //     return $this->belongsTo(RequestDetail::class);
+    // }
 }

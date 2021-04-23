@@ -45,6 +45,7 @@ class RequestPolicyController extends Controller
     {
         if ($requestForm->id == $requestDetail->request_form_id){
             $policy = new RequestPolicy($request->all());
+            
             return new RequestPolicyResource($policy);
         }
     }

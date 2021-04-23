@@ -15,7 +15,8 @@ class CreateRequestPolicyDetailsTable extends Migration
     {
         Schema::create('request_policy_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('request_policy_id')->constrained('request_policies');
+            $table->unsignedSmallInteger('request_detail_id');
+            $table->foreign('request_detail_id')->references('id')->on('request_details')->onDelete('cascade');
             $table->json('source')->nullable();
             $table->json('destination')->nullable();
             $table->json('service_port')->nullable();

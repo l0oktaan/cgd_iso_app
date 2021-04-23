@@ -21,6 +21,7 @@ class PolicyController extends Controller
 
         $policy = new Policy;
         $policy = $group->policies()->with("policy_details")
+            ->orderBy('updated_date','desc')
             ->get();
 
 

@@ -14,11 +14,13 @@ class RequestDetailResource extends JsonResource
      */
     public function toArray($request)
     {
+        $policy_detail = $this->whenLoaded('request_policy_details');
         return [
             'id' => $this->id,
             'request_form_id' => $this->request_form_id,
             'type' => $this->type,
             'request_detail' => $this->request_detail,
+            'request_policy_detail' => $this->request_policy_details,
             'description' => $this->description
         ];
     }

@@ -10,7 +10,7 @@ class RequestPolicyDetail extends Model
     use HasFactory;
     protected $fillable = [
         'id',
-        'request_policy_id',
+        'request_detail_id',
         'source',
         'destination',
         'service_port',
@@ -19,7 +19,7 @@ class RequestPolicyDetail extends Model
     ];
 
 
-    public function request_policy(){
-        return $this->belongsTo(RequesPolicy::class);
+    public function request_detail(){
+        return $this->belongsTo(RequesDetail::class);
     }
 }
