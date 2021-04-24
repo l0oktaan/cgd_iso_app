@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Group as MyGroup;
 use App\Http\Resources\GroupResource;
+use Symfony\Component\Console\Input\Input;
 use Symfony\Component\HttpFoundation\Response;
 
 class GroupController extends Controller
@@ -14,10 +15,22 @@ class GroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        try {
+            if ($request->has('type')){
+                $type = $request->type;
+                $group = MyGroup::where('group_type',$type)
+                    ->get();
 
-        return GroupResource::collection(MyGroup::all());
+            }else{
+                $group = MyGroup::all();
+            }
+            return GroupResource::collection($group);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
     }
 
     /**

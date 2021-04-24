@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use App\Models\RequestForm;
 use Illuminate\Http\Request;
+use App\Models\RequestStatus;
 use App\Http\Resources\RequestFormResource;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -100,6 +101,9 @@ class RequestFormController extends Controller
                 $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
                 $requestForm->status = 2;
                 $requestForm->save();
+
+                $requestStatus = new RequestStatus;
+                $requestForm->request_status()->save($requestStatus);
                 return new RequestFormResource($requestForm);
             }
         }

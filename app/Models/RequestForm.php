@@ -49,4 +49,7 @@ class RequestForm extends Model
     public function request_files(){
         return $this->hasMany(RequestFile::class);
     }
+    public function request_status(){
+        return $this->hasOne(RequestStatus::class);
+    }
 }
