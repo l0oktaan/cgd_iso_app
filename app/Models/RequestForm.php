@@ -33,6 +33,7 @@ class RequestForm extends Model
         'end_time',
         'status',
         'description',
+        'camunda_id',
         'updated_date'
     ];
     public function request_details(){
