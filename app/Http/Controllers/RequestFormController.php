@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Document;
 use App\Models\RequestForm;
 use Illuminate\Http\Request;
 use App\Models\RequestStatus;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\RequestFormResource;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,9 +18,127 @@ class RequestFormController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+
+    private function getUser(){
+        try {
+            if (Auth::check()){
+                $tmp = User::with('user_detail')->where('id',Auth::id())->get();
+                $auth = $tmp[0];
+                return $tmp[0];
+
+                // $user = (object)[
+                //     'id' => $auth->id,
+                //     'name' => $auth->name,
+                //     'group_id' => $auth->user_detail->group_id
+                // ];
+                // return $user;
+            }
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+
+    public function getToEnsure(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                        ->where('status',2)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getToConsider(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('status',3)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getToApprove(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('status',4)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getToOperate(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::with('request_status')
+                        ->where('forward_to','LIKE','%'.$user->user_detail->group_id.'%')
+                        ->where('status',5)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getToFollow(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                        ->where('status',6)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getToCheck(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('status',7)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
     public function index()
     {
-        return RequestFormResource::collection(RequestForm::all());
+            try {
+                $user = $this->getUser();
+            if (in_array('admin',json_decode($user->user_detail->roles))){
+                return RequestFormResource::collection(RequestForm::all());
+            }else{
+                $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                        ->where('status',6)
+                        ->get();
+                        return RequestFormResource::collection($requestForm);
+            }
+            } catch (\Throwable $th) {
+                return $th;
+            }
+
+
+
     }
 
     /**

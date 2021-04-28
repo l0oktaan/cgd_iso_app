@@ -2,14 +2,15 @@
 
 namespace App\Models;
 
+use Laravel\Passport\HasApiTokens;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable,HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -37,7 +38,19 @@ class User extends Authenticatable
      *
      * @var array
      */
+    public function username(){
+        return 'name';
+    }
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+    public function findForPassport($username)
+    {
+        return $this->where('name', $username)->first();
+    }
+
+    public function user_detail(){
+        return $this->hasOne(UserDetail::class);
+    }
+
 }
