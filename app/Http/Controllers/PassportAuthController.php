@@ -85,4 +85,11 @@ class PassportAuthController extends Controller
         }
 
     }
+    public function logout()
+    {
+        if (Auth::check()){
+            $user = Auth::user()->token();
+            $user->revoke();
+        }
+    }
 }

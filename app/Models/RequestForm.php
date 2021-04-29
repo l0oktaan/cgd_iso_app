@@ -12,6 +12,7 @@ class RequestForm extends Model
     protected $fillable = [
         'id',
         'user_id',
+        'user_name',
         'group_id',
         'group_code',
         'year',
@@ -51,6 +52,9 @@ class RequestForm extends Model
         return $this->hasMany(RequestFile::class);
     }
     public function request_status(){
-        return $this->hasOne(RequestStatus::class);
+        return $this->hasMany(RequestStatus::class);
+    }
+    public function request_operate_7(){
+        return $this->request_status()->where('forward_to','LIKE','%7%');
     }
 }

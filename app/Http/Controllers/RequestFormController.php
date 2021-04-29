@@ -8,6 +8,7 @@ use App\Models\RequestForm;
 use Illuminate\Http\Request;
 use App\Models\RequestStatus;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\RequestFormResource;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -77,17 +78,23 @@ class RequestFormController extends Controller
         } catch (\Throwable $th) {
             return $th;
         }
-
     }
     public function getToOperate(){
-
+        // return $this->getUser()->user_detail->group_id;
         try {
         $user = $this->getUser();
 
-        $requestForm = RequestForm::with('request_status')
-                        ->where('forward_to','LIKE','%'.$user->user_detail->group_id.'%')
-                        ->where('status',5)
-                        ->get();
+        // $requestForm = RequestForm::with(['request_status'=> function ($query){
+        //     $query->where('forward_to','LIKE','%'.'1'.'%');
+        // }])
+        //                 // ->where('status',5)
+        //                 ->get();
+        // $requestForm = new RequestForm;
+        $requestForm = RequestForm::whereHas('request_status',function(Builder $query){
+            $query->where('forward_to','like','%6%');
+        }
+        )->where('status',5)->get();
+
         return RequestFormResource::collection($requestForm);
         } catch (\Throwable $th) {
             return $th;
@@ -129,7 +136,7 @@ class RequestFormController extends Controller
                 return RequestFormResource::collection(RequestForm::all());
             }else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
-                        ->where('status',6)
+                    ->orderBy('created_date','desc')
                         ->get();
                         return RequestFormResource::collection($requestForm);
             }

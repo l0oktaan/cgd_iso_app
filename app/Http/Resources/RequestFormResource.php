@@ -17,6 +17,7 @@ class RequestFormResource extends JsonResource
         return [
             'id' => $this->id,
             'user_id' => $this->user_id,
+            'user_name' => $this->user_name,
             'group_id' => $this->group_id,
             'group_code' => $this->group_code,
             'year' => $this->year,

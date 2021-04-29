@@ -33,8 +33,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 // Route::Resource('/request_forms', RequestFormController::class);
 Route::middleware('auth:api')->group(function () {
+    Route::post('logout', [PassportAuthController::class, 'logout']);
+
     Route::get('/request_form_ensure', 'App\Http\Controllers\RequestFormController@getToEnsure');
-    Route::get('/request_form_consider', 'App\Http\Controllers\RequestFormController@getToEnsure');
+    Route::get('/request_form_consider', 'App\Http\Controllers\RequestFormController@getToConsider');
     Route::get('/request_form_approve', 'App\Http\Controllers\RequestFormController@getToApprove');
     Route::get('/request_form_operate', 'App\Http\Controllers\RequestFormController@getToOperate');
     Route::get('/request_form_follow', 'App\Http\Controllers\RequestFormController@getToFollow');
