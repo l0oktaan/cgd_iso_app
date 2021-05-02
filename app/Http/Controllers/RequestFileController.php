@@ -45,7 +45,7 @@ class RequestFileController extends Controller
     {
         $file = $request->file;
         $request->validate([
-            'file' => 'required|mimes:jpeg,png,pdf|max:2048'
+            'file' => 'required|mimes:jpeg,png,pdf|max:10240'
         ]);
 
         usleep(10);
