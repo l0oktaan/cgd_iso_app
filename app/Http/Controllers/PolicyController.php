@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Group;
 use App\Models\Policy;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Resources\PolicyResource;
 use App\Http\Resources\PolicyCollection;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,6 +18,25 @@ class PolicyController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    private function getUser(){
+        try {
+            if (Auth::check()){
+                $tmp = User::with('user_detail')->where('id',Auth::id())->get();
+                $auth = $tmp[0];
+                return $tmp[0];
+
+                // $user = (object)[
+                //     'id' => $auth->id,
+                //     'name' => $auth->name,
+                //     'group_id' => $auth->user_detail->group_id
+                // ];
+                // return $user;
+            }
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
     public function index(Group $group)
     {
 
