@@ -142,7 +142,7 @@ class PassportAuthController extends Controller
                 $user_detail->roles = $roles;
                 $user_detail->status = $status;
                 $user_detail->user_id = $new_user->id;
-                echo $user_detail;
+
 
                 $group->user_details()->save($user_detail);
 
