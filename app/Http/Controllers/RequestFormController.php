@@ -133,7 +133,7 @@ class RequestFormController extends Controller
             try {
                 $user = $this->getUser();
             if (in_array('admin',json_decode($user->user_detail->roles))){
-                return RequestFormResource::collection(RequestForm::all());
+                return RequestFormResource::collection(RequestForm::all()->sortByDesc('created_date'));
             }else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                     ->orderBy('created_date','desc')
