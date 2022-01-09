@@ -18,7 +18,6 @@ class AssetEquipmentController extends Controller
      */
     public function index(Group $group)
     {
-
         return AssetEquipmentResource::collection($group->asset_equipments()->get());
     }
 

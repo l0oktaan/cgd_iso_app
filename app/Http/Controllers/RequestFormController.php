@@ -133,7 +133,7 @@ class RequestFormController extends Controller
             try {
                 $user = $this->getUser();
             if (in_array('admin',json_decode($user->user_detail->roles))){
-                return RequestFormResource::collection(RequestForm::all());
+                return RequestFormResource::collection(RequestForm::all()->SortByDesc('created_date'));
             }else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                     ->orderBy('created_date','desc')
@@ -204,7 +204,7 @@ class RequestFormController extends Controller
     public function getDocumentOrder(RequestForm $requestForm){
         $last_doc = Document::where('group_code',$requestForm->group_code)
                                     ->where('year',$requestForm->year)
-                                    ->orderBy('order_no')
+                                    ->orderBy('order_no','desc')
                                     ->first();
         if (!$last_doc){
             $order = 1;

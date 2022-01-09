@@ -45,7 +45,7 @@ class RequestFileController extends Controller
     {
         $file = $request->file;
         $request->validate([
-            'file' => 'required|mimes:jpeg,png,pdf|max:10240'
+            'file' => 'required|mimes:jpeg,png,pdf|max:20480'
         ]);
 
         usleep(10);
@@ -72,7 +72,13 @@ class RequestFileController extends Controller
      */
     public function show(RequestForm $requestForm,RequestFile $requestFile)
     {
-        return response()->download(public_path('uploads\\' . $requestFile->file_name),'Test');
+       //return response()->download(public_path('uploads\\' . $requestFile->file_name),'Test');
+       try {
+            return response()->download(public_path('uploads/' . $requestFile->file_name),'Test');
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
         if (Storage::disk('uploads')->exists($requestFile->file_name)) {
             $headers = array(
                 'Content-Type: application/pdf',

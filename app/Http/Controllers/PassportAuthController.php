@@ -78,7 +78,8 @@ class PassportAuthController extends Controller
             $filter="(sAMAccountName=".$username . ")";
             $result = ldap_search($ldap,$dc,$filter);
             $info = ldap_get_entries($ldap, $result);
-            var_dump($info);
+            // echo ($info);
+            // var_dump($info);
 
 
             if (count($info) == 0){
@@ -95,7 +96,7 @@ class PassportAuthController extends Controller
 
                 $group_tmp = $info[0]["department"][0];
 
-                echo $group_tmp;
+                //echo $group_tmp;
                 $group_find = 0;
                 switch ($group_tmp) {
                     case strpos($group_tmp,'1') !== false:
@@ -125,7 +126,7 @@ class PassportAuthController extends Controller
                 }
 
                 $group_id = $group_find;
-                echo $group_id;
+                //echo $group_id;
 
                 $group = Group::where('id',$group_id)->first();
 
@@ -192,6 +193,7 @@ class PassportAuthController extends Controller
 
 
         } catch (\Throwable $th) {
+            echo $th;
             return false;
         }
     }
@@ -208,6 +210,7 @@ class PassportAuthController extends Controller
             $result = $this->checkAD($username,$password);
 
             if (!$result) {
+                //return 'ad error';
                 return response()->json(['error' => 'Unauthorised'], 401);
             }
 

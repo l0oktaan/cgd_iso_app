@@ -18,6 +18,7 @@ class RequestFormResource extends JsonResource
             'id' => $this->id,
             'user_id' => $this->user_id,
             'user_name' => $this->user_name,
+            'fullname' => $this->user->user_detail->firstname.' '.$this->user->user_detail->lastname,
             'group_id' => $this->group_id,
             'group_code' => $this->group_code,
             'year' => $this->year,
