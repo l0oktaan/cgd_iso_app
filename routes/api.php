@@ -39,6 +39,8 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/request_form_consider', 'App\Http\Controllers\RequestFormController@getToConsider');
     Route::get('/request_form_approve', 'App\Http\Controllers\RequestFormController@getToApprove');
     Route::get('/request_form_operate', 'App\Http\Controllers\RequestFormController@getToOperate');
+    Route::get('/request_approved', 'App\Http\Controllers\RequestFormController@getApproved');
+    Route::get('/request_operated', 'App\Http\Controllers\RequestFormController@getOperated');
     Route::get('/request_form_follow', 'App\Http\Controllers\RequestFormController@getToFollow');
     Route::get('/request_form_check', 'App\Http\Controllers\RequestFormController@getToCheck');
     Route::apiResources([

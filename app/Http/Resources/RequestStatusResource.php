@@ -17,6 +17,7 @@ class RequestStatusResource extends JsonResource
         return [
             'id' => $this->id,
             'request_form_id' => $this->request_form_id,
+	    'gruop_id' => $this->request_form->group_id,
             'ensure_status' => $this->ensure_status,
             'ensure_detail' => $this->ensure_detail,
             'ensure_by' => $this->ensure_by,

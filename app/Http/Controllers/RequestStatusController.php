@@ -111,6 +111,11 @@ class RequestStatusController extends Controller
                             'status' => 3
                         ]);
                         $request_form->save();
+                    }else if ($request->ensure_status == "0"){
+                        $request_form->update([
+                            'status' => 1
+                        ]);
+			$request_form->save();
                     }
                 }else if ($request->has('consider_status')){
                     if ($request->consider_status == 1){

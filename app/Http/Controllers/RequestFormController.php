@@ -79,6 +79,18 @@ class RequestFormController extends Controller
             return $th;
         }
     }
+    public function getApproved(){
+
+        try {
+        $user = $this->getUser();
+
+        $requestForm = RequestForm::where('status','>',4)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+    }
     public function getToOperate(){
         // return $this->getUser()->user_detail->group_id;
         try {
@@ -90,8 +102,9 @@ class RequestFormController extends Controller
         //                 // ->where('status',5)
         //                 ->get();
         // $requestForm = new RequestForm;
-        $requestForm = RequestForm::whereHas('request_status',function(Builder $query){
-            $query->where('forward_to','like','%6%');
+        $g_id = (string)$user->user_detail->group_id;
+        $requestForm = RequestForm::whereHas('request_status',function(Builder $query)use ($g_id){
+            $query->where('forward_to','like',"%".$g_id."%");
         }
         )->where('status',5)->get();
 
@@ -100,6 +113,28 @@ class RequestFormController extends Controller
             return $th;
         }
 
+    }
+    public function getOperated(){
+        // return $this->getUser()->user_detail->group_id;
+        try {
+        $user = $this->getUser();
+
+        // $requestForm = RequestForm::with(['request_status'=> function ($query){
+        //     $query->where('forward_to','LIKE','%'.'1'.'%');
+        // }])
+        //                 // ->where('status',5)
+        //                 ->get();
+        // $requestForm = new RequestForm;
+        $g_id = (string)$user->user_detail->group_id;
+        $requestForm = RequestForm::whereHas('request_status',function(Builder $query)use ($g_id){
+            $query->where('forward_to','like',"%".$g_id."%");
+        }
+        )->where('status','>',5)->get();
+
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
     public function getToFollow(){
 
@@ -130,16 +165,17 @@ class RequestFormController extends Controller
     }
     public function index()
     {
+//	return "test";
             try {
-                $user = $this->getUser();
-            if (in_array('admin',json_decode($user->user_detail->roles))){
-                return RequestFormResource::collection(RequestForm::all()->SortByDesc('created_date'));
-            }else{
+            	$user = $this->getUser();
+	        if (in_array('admin',json_decode($user->user_detail->roles))){
+                	return RequestFormResource::collection(RequestForm::all()->SortByDesc('created_date'));
+            	}else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                     ->orderBy('created_date','desc')
                         ->get();
                         return RequestFormResource::collection($requestForm);
-            }
+            	}
             } catch (\Throwable $th) {
                 return $th;
             }
@@ -152,7 +188,7 @@ class RequestFormController extends Controller
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
-     */
+    */
     public function create()
     {
         //
@@ -179,8 +215,15 @@ class RequestFormController extends Controller
      */
     public function show(RequestForm $requestForm)
     {
+	$user = $this->getUser();
+	if ($user->user_detail->group_id == $requestForm->group_id || in_array('consider',json_decode($user->user_detail->roles))||in_array('approve',json_decode($user->user_detail->roles))||in_array('operate',json_decode($user->user_detail->roles))||in_array('check',json_decode($user->user_detail->roles))){
+        //if ($user->user_detail->group_id == $requestForm->group_id || in_array('admin',json_decode($user->user_detail->roles))){
+            return new RequestFormResource($requestForm);
+        }else{
+		return response(null,Response::HTTP_NOT_FOUND);
+	}
 
-        return new RequestFormResource($requestForm);
+        //return new RequestFormResource($requestForm);
     }
 
     /**
@@ -215,8 +258,10 @@ class RequestFormController extends Controller
     }
     public function update(Request $request, RequestForm $requestForm)
     {
-        if ($request->has('status')){
+	if ($request->has('status')){
+
             if ($request->status == 2 && $requestForm->status == 1){
+		if ($requestForm->order_no == 0){
                 $order = $this->getDocumentOrder($requestForm);
                 $document = new Document;
                 $document->group_code = $requestForm->group_code;
@@ -224,8 +269,9 @@ class RequestFormController extends Controller
                 $document->order_no = $order;
                 $document->updated_date = date('Y-m-d H:i:s');
                 $requestForm->document()->save($document);
-                $requestForm->order_no = $order;
-                $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
+                    $requestForm->order_no = $order;
+                    $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
+		}
                 $requestForm->status = 2;
                 $requestForm->save();
 
