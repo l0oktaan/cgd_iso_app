@@ -49,7 +49,7 @@ class RequestFileController extends Controller
         ]);
 
         usleep(10);
-        $getTime = time();
+        $getTime = time() . random_int(100000, 999999);
         $filename = $getTime . "." . $file->getClientOriginalExtension();;
         $path = hash('sha256',time());
         if(Storage::disk('uploads')->put($filename, File::get($file))) {

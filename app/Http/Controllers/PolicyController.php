@@ -41,12 +41,31 @@ class PolicyController extends Controller
     {
 
         $policy = new Policy;
-        $policy = $group->policies()->with("policy_details")
+        $user = $this->getUser();
+        // if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('admin',json_decode($user->user_detail->roles))){
+        //     // $policy = $group->policies()->with("policy_details")
+        //     $policy = Policy::with("policy_details")
+        //     ->orderBy('updated_date','desc')
+        //     ->get();
+
+
+        //     return PolicyResource::collection($policy);
+        // }else{
+        //     $policy = $group->policies()->with("policy_details")
+        //     ->orderBy('updated_date','desc')
+        //     ->get();
+
+
+        //     return PolicyResource::collection($policy);
+        // }
+            $policy = $group->policies()->with("policy_details")
             ->orderBy('updated_date','desc')
             ->get();
 
 
             return PolicyResource::collection($policy);
+
+        
 
 
     }

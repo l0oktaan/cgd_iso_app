@@ -115,7 +115,7 @@ class RequestStatusController extends Controller
                         $request_form->update([
                             'status' => 1
                         ]);
-			$request_form->save();
+			            $request_form->save();
                     }
                 }else if ($request->has('consider_status')){
                     if ($request->consider_status == 1){
@@ -128,7 +128,13 @@ class RequestStatusController extends Controller
                             'status' => 4
                         ]);
                         // $request_form->save();
+                    }else if ($request->consider_status == 0){
+                        $request_form->update([
+                            'status' => 1
+                        ]);
+                        // $request_form->save();
                     }
+                    
                 }else if ($request->has('approve_status')){
                     if ($request->approve_status == 1){
                         $request_form->update([

@@ -153,13 +153,17 @@ class RequestFormController extends Controller
     public function getToCheck(){
 
         try {
-        $user = $this->getUser();
-
-        $requestForm = RequestForm::where('status',7)
-                        ->get();
-        return RequestFormResource::collection($requestForm);
+            $user = $this->getUser();
+            if (in_array('check',json_decode($user->user_detail->roles))){
+                $requestForm = RequestForm::where('status',7)
+                            ->get();
+            return RequestFormResource::collection($requestForm);
+            }else{
+                return response(null,Response::HTTP_NOT_FOUND);
+            }
+        
         } catch (\Throwable $th) {
-            return $th;
+            return response(null,Response::HTTP_NOT_FOUND);
         }
 
     }
@@ -168,8 +172,8 @@ class RequestFormController extends Controller
 //	return "test";
             try {
             	$user = $this->getUser();
-	        if (in_array('admin',json_decode($user->user_detail->roles))){
-                	return RequestFormResource::collection(RequestForm::all()->SortByDesc('created_date'));
+                if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('approve',json_decode($user->user_detail->roles))){
+                        return RequestFormResource::collection(RequestForm::all()->SortByDesc('created_date'));
             	}else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                     ->orderBy('created_date','desc')
@@ -179,9 +183,6 @@ class RequestFormController extends Controller
             } catch (\Throwable $th) {
                 return $th;
             }
-
-
-
     }
 
     /**
@@ -258,33 +259,41 @@ class RequestFormController extends Controller
     }
     public function update(Request $request, RequestForm $requestForm)
     {
-	if ($request->has('status')){
+        try {
+            if ($request->has('status')){
+                
+                    if ($request->status == 2 && $requestForm->status == 1){
+                        if ($requestForm->order_no == 0){
+                                $order = $this->getDocumentOrder($requestForm);                                
+                                $document = new Document;
+                                $document->group_code = $requestForm->group_code;
+                                $document->year = $requestForm->year;
+                                $document->order_no = $order;
 
-            if ($request->status == 2 && $requestForm->status == 1){
-		if ($requestForm->order_no == 0){
-                $order = $this->getDocumentOrder($requestForm);
-                $document = new Document;
-                $document->group_code = $requestForm->group_code;
-                $document->year = $requestForm->year;
-                $document->order_no = $order;
-                $document->updated_date = date('Y-m-d H:i:s');
-                $requestForm->document()->save($document);
-                    $requestForm->order_no = $order;
-                    $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
-		}
-                $requestForm->status = 2;
-                $requestForm->save();
-
-                $requestStatus = new RequestStatus;
-                $requestForm->request_status()->save($requestStatus);
-                return new RequestFormResource($requestForm);
+                                $document->updated_date = date('Y-m-d H:i:s');
+                                $requestForm->document()->save($document);
+                                    $requestForm->order_no = $order;
+                                    $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
+                        }
+                                $requestForm->status = 2;
+                                $requestForm->save();
+                
+                                $requestStatus = new RequestStatus;
+                                $requestForm->request_status()->save($requestStatus);
+                                return new RequestFormResource($requestForm);
+                            }
+                        }
+                
+                        $requestForm->update($request->all());
+                
+                        return new RequestFormResource($requestForm);
+                
+                    
             }
-        }
-
-        $requestForm->update($request->all());
-
-        return new RequestFormResource($requestForm);
-    }
+            catch (\Throwable $th) {
+                return $th;
+            }
+    } 
 
     /**
      * Remove the specified resource from storage.
