@@ -14,6 +14,7 @@ class UserDetailResource extends JsonResource
      */
     public function toArray($request)
     {
+        
         return [
             'id' => $this->id,
             'ldap' => $this->ldap,
@@ -23,7 +24,8 @@ class UserDetailResource extends JsonResource
             'group_name' => $this->group->group_name,
             'roles' => $this->roles,
             'last_logon' => $this->last_logon,
-            'status' => $this->status
+            'status' => $this->status,
+            'line_id' => $this->line_id
         ];
     }
 }

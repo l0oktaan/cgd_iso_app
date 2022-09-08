@@ -14,6 +14,7 @@ class GroupResource extends JsonResource
      */
     public function toArray($request)
     {
+        $user_details = $this->whenLoaded('user_details');
         return [
             'id' => $this->id,
             'group_name' => $this->group_name,
@@ -21,7 +22,8 @@ class GroupResource extends JsonResource
             'group_type' => $this->group_type,
             'ip_address' => $this->ip_address,
             'group_tags' => $this->group_tags,
-            'description' => $this->description
+            'description' => $this->description,
+            'user_details' => $user_details
         ];
     }
 }
