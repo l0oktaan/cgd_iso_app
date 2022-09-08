@@ -16,7 +16,8 @@ class UserDetail extends Model
         'group_id',
         'roles',
         'last_logon',
-        'status'
+        'status',
+        'line_id'
     ];
     public function group(){
         return $this->belongsTo(Group::class);
