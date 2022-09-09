@@ -14,6 +14,7 @@ use App\Http\Controllers\RequestDetailController;
 use App\Http\Controllers\RequestStatusController;
 use App\Http\Controllers\AssetEquipmentController;
 use App\Http\Controllers\RequestPolicyDetailController;
+use App\Http\Controllers\LineBotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,7 +32,7 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::Resource('/request_forms', RequestFormController::class);
+Route::Resource('/line_bot', LineBotController::class);
 Route::middleware('auth:api')->group(function () {
     Route::post('search_ad',[PassportAuthController::class, 'searchAD']);
     Route::post('logout', [PassportAuthController::class, 'logout']);

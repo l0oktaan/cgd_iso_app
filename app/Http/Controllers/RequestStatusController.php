@@ -9,6 +9,7 @@ use App\Models\RequestStatus;
 use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use App\Http\Resources\RequestStatusResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\LineBotController;
 
 class RequestStatusController extends Controller
 {
@@ -101,11 +102,30 @@ class RequestStatusController extends Controller
             }
         }
     }
-    public function lineAlert(){
-        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient('WblupvwwWW5IbQ1KmARod4KCHX5U8K6wCTPSW+GzAUUWRWrlr9Dofu4VKOPXnRGnN+PJ+yAgraZCSLfsKc248nfr4hLqIVtjUUxW/URPRiRPWk5mfKIAojWtjiNoGIFVVV6m9A4aL8ec58KIPvUsgAdB04t89/1O/w1cDnyilFU=');
-        $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => '53dbbf75ecca5c5874423d9ff8c7151c']);
-        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('hello');
-        $response = $bot->pushMessage('16746167292294', $textMessageBuilder);
+    public function getUserLineID($group_id){
+        $user_details = App\Models\UserDetail::where('group_id','=',$group_id)->get();
+        $arr=array();
+        foreach($user_details as $item){
+            if ($item->line_id){
+                array_push($arr,$item->line_id);
+            }
+            
+        }        
+        return $arr;//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
+    }
+    public function lineAlert($arr,$message){
+        // $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+        // $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+        // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('test');
+        // $response = $bot->pushMessage('U1e5e8b60c1b4ccb39fd9d1b33859bcc8', $textMessageBuilder);
+        
+        // $bot->multicast(['U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600'], 'Test Multicast');
+
+        $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+        $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+        $userIds = $arr;//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
+        $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+        $bot->multicast($userIds, $textMessageBuilder);
     }
     public function update(Request $request,RequestForm $request_form, RequestStatus $requestStatus)
     {
@@ -130,18 +150,18 @@ class RequestStatusController extends Controller
                         $request_form->update([
                             'status' => 5
                         ]);
-                        $this->lineAlert();
-                        // $request_form->save();
+                        
+                        
                     }else if ($request->consider_status == 2){
                         $request_form->update([
                             'status' => 4
                         ]);
-                        // $request_form->save();
+                        
                     }else if ($request->consider_status == 0){
                         $request_form->update([
                             'status' => 1
                         ]);
-                        // $request_form->save();
+                        
                     }
                     
                 }else if ($request->has('approve_status')){
@@ -149,30 +169,34 @@ class RequestStatusController extends Controller
                         $request_form->update([
                             'status' => 5
                         ]);
-                        // $request_form->save();
+                        
                     }
                 }else if ($request->has('operate_status')){
                     // if ($request->operate_status == 1){
                         $request_form->update([
                             'status' => 6
                         ]);
-                        // $request_form->save();
+                        
                     // }
                 }else if ($request->has('follow_status')){
                     // if ($request->follow_status == 1){
                         $request_form->update([
                             'status' => 7
                         ]);
-                        $this->lineAlert();
-                        // $request_form->save();
+
+                        $line_bot = new LineBotController();
+                        $line_bot->multiCast(7,'เอกสารหมายเลข : ' . $request_form->request_no . ' ผ่านการติดตามผลแล้ว');
+                        
+                        
                     // }
                 }else if ($request->has('check_status')){
                     // if ($request->check_status == 1){
                         $request_form->update([
                             'status' => 8
                         ]);
-                        $this->lineAlert();
-                        // $request_form->save();
+                        $line_bot = new LineBotController();
+                        $line_bot->multiCast(7,'เอกสารหมายเลข : ' . $request_form->request_no . ' สิ้นสุดแล้ว');
+                        
                     // }
                 }
                 return new RequestStatusResource($requestStatus);
