@@ -1,0 +1,61 @@
+[
+    {
+    "type": "bubble",
+    "size": "giga",
+    "hero": {
+      "type": "image",
+      "url": "https://linewebhook.cgd.go.th:5000/images/register.png",
+      "size": "69%",
+      "aspectMode": "cover",
+      "action": {
+        "type": "uri",
+        "uri": "http://linecorp.com/"
+      },
+      "position": "relative",
+      "margin": "50px"
+    },
+    "body": {
+      "type": "box",
+      "layout": "vertical",
+      "contents": [
+        {
+          "type": "text",
+          "text": "ลงทะเบียนเพื่อรับการแจ้งเตือน",
+          "weight": "bold",
+          "size": "lg"
+        },
+        {
+          "type": "box",
+          "layout": "vertical",
+          "margin": "lg",
+          "spacing": "sm",
+          "contents": [
+            {
+              "type": "box",
+              "layout": "baseline",
+              "spacing": "sm",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "พิมพ์ ad : ตามด้วย user ad ของท่าน",
+                  "weight": "bold"
+                }
+              ]
+            },
+            {
+              "type": "box",
+              "layout": "vertical",
+              "contents": [
+                {
+                  "type": "text",
+                  "text": "เช่น ad : songwut.saj",
+                  "color": "#999999"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+}
+]

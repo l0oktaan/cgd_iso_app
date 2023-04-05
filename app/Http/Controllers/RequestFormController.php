@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use App\Http\Resources\RequestFormResource;
 use Symfony\Component\HttpFoundation\Response;
+use App\Http\Controllers\LineBotController;
 
 class RequestFormController extends Controller
 {
@@ -261,34 +262,37 @@ class RequestFormController extends Controller
     {
         try {
             if ($request->has('status')){
-                
-                    if ($request->status == 2 && $requestForm->status == 1){
-                        if ($requestForm->order_no == 0){
-                                $order = $this->getDocumentOrder($requestForm);                                
-                                $document = new Document;
-                                $document->group_code = $requestForm->group_code;
-                                $document->year = $requestForm->year;
-                                $document->order_no = $order;
+                $line_bot = new LineBotController();
+                if ($request->status == 2 && $requestForm->status == 1){
+                    if ($requestForm->order_no == 0){
+                        $order = $this->getDocumentOrder($requestForm);                                
+                        $document = new Document;
+                        $document->group_code = $requestForm->group_code;
+                        $document->year = $requestForm->year;
+                        $document->order_no = $order;
 
-                                $document->updated_date = date('Y-m-d H:i:s');
-                                $requestForm->document()->save($document);
-                                    $requestForm->order_no = $order;
-                                    $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
-                        }
-                                $requestForm->status = 2;
-                                $requestForm->save();
-                
-                                $requestStatus = new RequestStatus;
-                                $requestForm->request_status()->save($requestStatus);
-                                return new RequestFormResource($requestForm);
-                            }
-                        }
-                
-                        $requestForm->update($request->all());
-                
-                        return new RequestFormResource($requestForm);
-                
+                        $document->updated_date = date('Y-m-d H:i:s');
+                        $requestForm->document()->save($document);
+                        $requestForm->order_no = $order;
+                        $requestForm->request_no = $requestForm->group_code . "-" . (string)$requestForm->year . "/" . sprintf('%03d',$order);
+                    }
+                    $requestForm->status = 2;
+                    $requestForm->save();
+                        
+                    $requestStatus = new RequestStatus;
+                    $requestForm->request_status()->save($requestStatus);
                     
+                    $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> กำลังรอการรับรอง";
+                    $line_bot->forEnsure($requestForm->group_id, $message);
+                    return new RequestFormResource($requestForm);
+                }elseif ($request->status == 1 && $requestForm->status == 2){
+                    $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> ยกเลิกการส่งแล้ว";
+                    $line_bot->forEnsure($requestForm->group_id, $message);
+                }
+            }    
+            $requestForm->update($request->all());
+    
+            return new RequestFormResource($requestForm);                    
             }
             catch (\Throwable $th) {
                 return $th;
@@ -303,11 +307,28 @@ class RequestFormController extends Controller
      */
     public function destroy(RequestForm $requestForm)
     {
-        if ($requestForm->status <= 1){
-            $requestForm->delete();
+	// try
+    // {
+	// 	$requestForm->status = 0;
+	// 	$requestForm->save();
+	// 	return response(null,Response::HTTP_CREATED);
+    // }
+	// catch (\\Throwble $th){
+	// 	return response(null,Response::HTTP_NOT_FOUND);
+	// }
+	//	$requestForm->status = 0;
+        try {
+            $requestForm->status = 0;
+            $requestForm->save();
             return response(null,Response::HTTP_CREATED);
-        }else{
+        } catch (\Throwable $th) {
             return response(null,Response::HTTP_NOT_FOUND);
         }
+        // if ($requestForm->status <= 1){
+        //    $requestForm->delete();
+        //    return response(null,Response::HTTP_CREATED);
+        // }else{
+        //    return response(null,Response::HTTP_NOT_FOUND);
+        // }
     }
 }

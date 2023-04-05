@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserDetail;
+use Illuminate\Support\Facades\Log;
 class LineBotController extends Controller
 {
     /**
@@ -24,6 +25,36 @@ class LineBotController extends Controller
         }        
         return $arr;//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
     }
+    public function getEnsureLineId($group_id){
+        $user_details = UserDetail::where('group_id','=',$group_id)->where('roles','LIKE','%ensure%')->get();
+        $arr=array();
+        foreach($user_details as $item){
+            if ($item->line_id){
+                array_push($arr,$item->line_id);
+            }
+        }
+        return $arr;
+    }
+    public function getOperatorLineId($group_id){
+        $user_details = UserDetail::where('group_id','=',$group_id)->where('roles','LIKE','%oper%')->get();
+        $arr=array();
+        foreach($user_details as $item){
+            if ($item->line_id){
+                array_push($arr,$item->line_id);
+            }            
+        }        
+        return $arr;
+    }
+    public function getApproveLineId(){
+        $user_details = UserDetail::where('roles','LIKE','%approve%')->get();
+        $arr=array();
+        foreach($user_details as $item){
+            if ($item->line_id){
+                array_push($arr,$item->line_id);
+            }            
+        }        
+        return $arr;
+    }
     public function lineAlert($arr,$message){
         // $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
         // $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
@@ -40,6 +71,21 @@ class LineBotController extends Controller
         $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
         $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
         $response = $bot->pushMessage($userId, $textMessageBuilder);
+        Log::info('LINE Push Message SUCCESS',['message' => $message]);
+    }
+    public function pushFlex(){
+        try {
+            //code...
+            $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+            $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+            // $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);    
+            $path = storage_path() . "/json/Flex/register.json"; // ie: /var/www/laravel/app/storage/json/filename.json            
+            $flex = json_decode(file_get_contents($path), true);            
+            $response = $bot->pushMessage('U1e5e8b60c1b4ccb39fd9d1b33859bcc8', $flex);
+            return $echo;
+        } catch (\Throwable $th) {
+            return $th;
+        }
     }
     public function multiCast($group_id,$message){
         try {
@@ -47,15 +93,59 @@ class LineBotController extends Controller
             $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
             $userIds = $this->getUserLineID($group_id);//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
             $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
-            $bot->multicast($userIds, $textMessageBuilder);
+            $bot->multicast($userIds, $textMessageBuilder);            
+            Log::info('LINE MultiCast SUCCESS',['Group ID' => $group_id, 'message' => $message]);
             return "Success";
         } catch (\Throwable $th) {
+            Log::error('LINE MultiCast ERROR',['Group ID' => $group_id, 'message' => $message,'error_msg' => $th]);
+            return $th;
+        }
+    }
+    public function forEnsure($group_id,$message){
+        try {
+            $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+            $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+            $userIds = $this->getEnsureLineId($group_id);//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');            
+            $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+            $bot->multicast($userIds, $textMessageBuilder);
+            Log::info('LINE For Ensure SUCCESS',['Group ID' => $group_id, 'message' => $message]);
+            return "Success";
+        } catch (\Throwable $th) {
+            Log::error('LINE For Ensure ERROR',['Group ID' => $group_id, 'message' => $message,'error_msg' => $th]);
+            return $th;
+        }
+    }
+    public function forApprove($message){
+        try {
+            $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+            $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+            $userIds = $this->getApproveLineId();//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
+            $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+            $bot->multicast($userIds, $textMessageBuilder);
+            Log::info('LINE For Approve SUCCESS',['Approver' => $userIds, 'message' => $message]);
+            return "Success";
+        } catch (\Throwable $th) {
+            Log::error('LINE For Approve ERROR',['Approver' => $userIds, 'message' => $message,'error_msg' => $th]);
+            return $th;
+        }
+    }
+    public function forOperator($group_id,$message){
+        try {
+            $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(env('ACCESS_TOKEN'));
+            $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => env('CHANNAL_SECRET')]);
+            $userIds = $this->getOperatorLineId($group_id);//array('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','U840efe68c8e812c4ff85ebeb3101c600');
+            $textMessageBuilder = new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message);
+            $bot->multicast($userIds, $textMessageBuilder);
+            Log::info('LINE For Operate SUCCESS',['Operator' => $userIds, 'message' => $message]);
+            return "Success";
+        } catch (\Throwable $th) {
+            Log::error('LINE For Operate ERROR',['Operator' => $userIds, 'message' => $message,'error_msg' => $th]);
             return $th;
         }
     }
     public function index()
     {
-        
+       
 
     }
     /**
@@ -77,6 +167,13 @@ class LineBotController extends Controller
     public function store(Request $request)
     {
         return $this->multiCast($request->group_id,$request->message);
+        if ($request->messagetype == 'flex'){
+            
+            return $this->pushFlex();
+        }else{
+            return $this->multiCast($request->group_id,$request->message);
+        }
+        
     }
 
     /**

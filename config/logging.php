@@ -37,7 +37,7 @@ return [
     'channels' => [
         'stack' => [
             'driver' => 'stack',
-            'channels' => ['single'],
+            'channels' => ['single','line_api'],
             'ignore_exceptions' => false,
         ],
 
@@ -103,6 +103,11 @@ return [
         'auth' => [
             'driver' => 'single',
             'path' => storage_path('logs/auth.log'),
+            'level' => 'debug'            
+        ],
+        'line' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/line_api.log'),
             'level' => 'debug'            
         ],
         'log-route'=>[

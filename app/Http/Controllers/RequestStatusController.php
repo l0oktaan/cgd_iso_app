@@ -129,53 +129,78 @@ class RequestStatusController extends Controller
     }
     public function update(Request $request,RequestForm $request_form, RequestStatus $requestStatus)
     {
+        $line_bot = new LineBotController;
         try {
             if ($request_form->id == $requestStatus->request_form_id){
                 $requestStatus->update($request->all());
                 // $this->checkStatus($request_form,$request);
+                
                 if ($request->has('ensure_status')){
                     if ($request->ensure_status == "1"){
                         $request_form->update([
                             'status' => 3
                         ]);
                         $request_form->save();
+                        $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> ผ่านการรับรองแล้ว");
+                        $line_bot->multiCast(7,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> รอการพิจารณา");
                     }else if ($request->ensure_status == "0"){
                         $request_form->update([
                             'status' => 1
                         ]);
 			            $request_form->save();
-                    }
+                        $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> ถูกส่งคืนเพื่อแก้ไขแล้ว");
+                    }                    
+                    
                 }else if ($request->has('consider_status')){
+                    $consider = "";
                     if ($request->consider_status == 1){
                         $request_form->update([
                             'status' => 5
-                        ]);
+                        ]);             
+                        $consider = ">> ผ่านการพิจารณา และส่งต่อเพื่อดำเนินการแล้ว";
                         
                         
                     }else if ($request->consider_status == 2){
                         $request_form->update([
                             'status' => 4
                         ]);
+                        $consider = ">> ผ่านการพิจารณา และส่งต่อเพื่อขออนุมัติแล้ว";
                         
                     }else if ($request->consider_status == 0){
                         $request_form->update([
                             'status' => 1
                         ]);
-                        
+                        $consider = ">> ถูกส่งคืนเพื่อแก้ไขแล้ว";                        
                     }
-                    
+                    $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n" . $consider);
+                    if (!empty($requestStatus->forward_to)){
+                        $arr = json_decode($requestStatus->forward_to);
+                        foreach ($arr as $forward_to) {
+                            // $line_bot->forOperator($forward_to,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> กำลังรอดำเนินการ");
+                        }
+                    }
+                    if ($request_form->status == 4){
+                        // $line_bot->forApprove("เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> กำลังรอการอนุมัติ");
+                    }                    
                 }else if ($request->has('approve_status')){
                     if ($request->approve_status == 1){
                         $request_form->update([
                             'status' => 5
                         ]);
-                        
+                        $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> ผ่านการอนุมัติแล้ว");
+                        if (!empty($requestStatus->forward_to)){
+                            $arr = json_decode($requestStatus->forward_to);
+                            foreach ($arr as $forward_to) {
+                                $line_bot->forOperator($forward_to,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> กำลังรอดำเนินการ");
+                            }
+                        }                        
                     }
                 }else if ($request->has('operate_status')){
                     // if ($request->operate_status == 1){
                         $request_form->update([
                             'status' => 6
                         ]);
+                        $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> ดำเนินการเสร็จแล้ว\r\n>> โปรดบันทึกการติดตามผล");
                         
                     // }
                 }else if ($request->has('follow_status')){
@@ -185,7 +210,9 @@ class RequestStatusController extends Controller
                         ]);
 
                         $line_bot = new LineBotController();
-                        $line_bot->multiCast(7,'เอกสารหมายเลข : ' . $request_form->request_no . ' ผ่านการติดตามผลแล้ว');
+                        // $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> ผ่านการติดตามผลแล้ว");
+                        // $line_bot->multiCast(7,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> รอการตรวจสอบผล");
+                        // $line_bot->pushMessage('U1e5e8b60c1b4ccb39fd9d1b33859bcc8','เอกสารหมายเลข : ' . $request_form->request_no . '\\nเรื่อง : '  .  $request_form->request_title . '\\n ผ่านการติดตามผลแล้ว');
                         
                         
                     // }
@@ -194,8 +221,8 @@ class RequestStatusController extends Controller
                         $request_form->update([
                             'status' => 8
                         ]);
-                        $line_bot = new LineBotController();
-                        $line_bot->multiCast(7,'เอกสารหมายเลข : ' . $request_form->request_no . ' สิ้นสุดแล้ว');
+                        // $line_bot = new LineBotController();
+                        // $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> สิ้นสุดกระบวนการแล้ว");
                         
                     // }
                 }
