@@ -43,7 +43,7 @@ class TaskCommand extends Command
         $checkDate = Carbon::today();
         $request_forms = RequestForm::where("end_date",$checkDate)->get();
         foreach ($request_forms as $request_form) {
-            $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> หมดอายุในวันนี้ ".Carbon::createFromFormat('Y-m-d', $checkDate)->format('d/m/Y'));
+            $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> หมดอายุในวันนี้ ". $checkDate->format('d/m/Y'));
             $request_form->alert_expire = 2;
             $request_form->save();
         }
@@ -53,7 +53,7 @@ class TaskCommand extends Command
         $checkDate = Carbon::today()->addDays(3);
         $request_forms = RequestForm::where("end_date",$checkDate)->get();
         foreach ($request_forms as $request_form) {
-            $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> กำลังจะหมดอายุในวันที่ ". Carbon::createFromFormat('Y-m-d', $checkDate)->format('d/m/Y'));
+            $line_bot->multiCast($request_form->group_id,"เอกสารหมายเลข : " . $request_form->request_no . "\r\nเรื่อง : "  .  $request_form->request_title . "\r\n>> กำลังจะหมดอายุในวันที่ ". $checkDate->format('d/m/Y'));
             $request_form->alert_expire = 1;
             $request_form->save();
         }
