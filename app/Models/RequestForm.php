@@ -35,7 +35,8 @@ class RequestForm extends Model
         'status',
         'description',
         'camunda_id',
-        'updated_date'
+        'updated_date',
+        'alert_expire'
     ];
     public function request_details(){
         return $this->hasMany(RequestDetail::class);
