@@ -63,8 +63,7 @@ class RequestFormController extends Controller
 
         $checkDate = Carbon::today()->addDays(3);
         $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
-                        ->where('alert_expire',1)
-                        ->whereBetween('end_date',array(Carbon::today(), $checkDate))
+                        ->whereBetween('end_date',[Carbon::today(), $checkDate])
                         ->get();
         return RequestFormResource::collection($requestForm);
         } catch (\Throwable $th) {
