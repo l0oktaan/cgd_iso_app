@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Document;
 use App\Models\RequestForm;
@@ -9,9 +10,9 @@ use Illuminate\Http\Request;
 use App\Models\RequestStatus;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
+use App\Http\Controllers\LineBotController;
 use App\Http\Resources\RequestFormResource;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Controllers\LineBotController;
 
 class RequestFormController extends Controller
 {
@@ -48,6 +49,22 @@ class RequestFormController extends Controller
 
         $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                         ->where('status',2)
+                        ->get();
+        return RequestFormResource::collection($requestForm);
+        } catch (\Throwable $th) {
+            return $th;
+        }
+
+    }
+    public function getCloseExpire(){
+
+        try {
+        $user = $this->getUser();
+
+        $checkDate = Carbon::today()->addDays(3);
+        $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                        ->where('alert_expire',1)
+                        ->whereBetween('end_date',array(Carbon::today(), $checkDate))
                         ->get();
         return RequestFormResource::collection($requestForm);
         } catch (\Throwable $th) {
@@ -162,7 +179,7 @@ class RequestFormController extends Controller
             }else{
                 return response(null,Response::HTTP_NOT_FOUND);
             }
-        
+
         } catch (\Throwable $th) {
             return response(null,Response::HTTP_NOT_FOUND);
         }
@@ -265,7 +282,7 @@ class RequestFormController extends Controller
                 $line_bot = new LineBotController();
                 if ($request->status == 2 && $requestForm->status == 1){
                     if ($requestForm->order_no == 0){
-                        $order = $this->getDocumentOrder($requestForm);                                
+                        $order = $this->getDocumentOrder($requestForm);
                         $document = new Document;
                         $document->group_code = $requestForm->group_code;
                         $document->year = $requestForm->year;
@@ -278,10 +295,10 @@ class RequestFormController extends Controller
                     }
                     $requestForm->status = 2;
                     $requestForm->save();
-                        
+
                     $requestStatus = new RequestStatus;
                     $requestForm->request_status()->save($requestStatus);
-                    
+
                     $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> กำลังรอการรับรอง";
                     $line_bot->forEnsure($requestForm->group_id, $message);
                     return new RequestFormResource($requestForm);
@@ -289,15 +306,15 @@ class RequestFormController extends Controller
                     $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> ยกเลิกการส่งแล้ว";
                     $line_bot->forEnsure($requestForm->group_id, $message);
                 }
-            }    
+            }
             $requestForm->update($request->all());
-    
-            return new RequestFormResource($requestForm);                    
+
+            return new RequestFormResource($requestForm);
             }
             catch (\Throwable $th) {
                 return $th;
             }
-    } 
+    }
 
     /**
      * Remove the specified resource from storage.
