@@ -61,7 +61,7 @@ class RequestFormController extends Controller
         try {
         $user = $this->getUser();
 
-        $checkDate = Carbon::today()->addDays(3);
+        $checkDate = Carbon::today()->addDays(7);
         $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                         ->whereBetween('end_date',[Carbon::today(), $checkDate])
                         ->get();
