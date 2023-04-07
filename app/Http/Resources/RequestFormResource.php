@@ -40,6 +40,7 @@ class RequestFormResource extends JsonResource
             'end_time' => $this->end_time,
             'status' => $this->status,
             'description' => $this->description,
+            'alert_expire' => $this->alert_expire,
             'camunda_id' => $this->camunda_id,
             'updated_date' => $this->updated_date
         ];
