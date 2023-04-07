@@ -190,7 +190,7 @@ class RequestFormController extends Controller
             try {
             	$user = $this->getUser();
                 if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('approve',json_decode($user->user_detail->roles))){
-                        return RequestFormResource::collection(RequestForm::where('status','>','0')->SortByDesc('created_date')->get());
+                        return RequestFormResource::collection(RequestForm::where('status','>','0')->orderBy('created_date','desc')->get());
             	}else{
                 $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
                     ->where('status','>','0')
