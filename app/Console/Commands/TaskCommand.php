@@ -51,7 +51,7 @@ class TaskCommand extends Command
     }
     private function CheckCloseExpireRequestForm(){
         $line_bot = new LineBotController;
-        $checkDate = Carbon::today()->addDays(3);
+        $checkDate = Carbon::today()->addDays(5);
         $request_forms = RequestForm::where("alert_expire",1)
             ->where("end_date",$checkDate)->get();
         foreach ($request_forms as $request_form) {
