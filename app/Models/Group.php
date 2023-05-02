@@ -33,4 +33,16 @@ class Group extends Model
         return $this->hasMany(UserDetail::class);
     }
 
+    public function systems(){
+        return $this->hasMany(System::class);
+    }
+    public function projects(){
+        return $this->hasManyThrough(
+            Project::class,
+            System::class
+        )->orderBy('id','desc');
+    }
+
+    
+
 }

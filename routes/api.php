@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\PolicyController;
+use App\Http\Controllers\SystemController;
+use App\Http\Controllers\LineBotController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\UserDetailController;
 use App\Http\Controllers\AssetPeopleController;
 use App\Http\Controllers\RequestFileController;
@@ -14,7 +17,6 @@ use App\Http\Controllers\RequestDetailController;
 use App\Http\Controllers\RequestStatusController;
 use App\Http\Controllers\AssetEquipmentController;
 use App\Http\Controllers\RequestPolicyDetailController;
-use App\Http\Controllers\LineBotController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,5 +63,7 @@ Route::middleware('auth:api')->group(function () {
         '/groups/{group}/policies' => PolicyController::class,
         '/groups/{group}/policies/{policy}/policy_details' => PolicyDetailController::class,
     ]);
+    Route::apiResource('/systems', SystemController::class);
+    Route::apiResource('/projects', ProjectController::class);
 });
 
