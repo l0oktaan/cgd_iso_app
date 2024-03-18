@@ -50,6 +50,7 @@ Route::middleware('auth:api')->group(function () {
     Route::apiResources([
         '/user_details' => UserDetailController::class,
         '/request_forms' => RequestFormController::class,
+        '/remote_forms' => RequestFormController::class,
         '/request_forms/{request_form}/request_details' => RequestDetailController::class,
         '/request_forms/{request_form}/request_status' => RequestStatusController::class,
         // '/request_forms/{request_form}/request_details/{request_detail}/request_policies' => RequestPolicyController::class,

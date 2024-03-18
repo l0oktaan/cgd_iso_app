@@ -184,20 +184,58 @@ class RequestFormController extends Controller
         }
 
     }
-    public function index()
+    public function index(Request $request)
     {
+        
 //	return "test";
             try {
             	$user = $this->getUser();
-                if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('approve',json_decode($user->user_detail->roles))){
-                        return RequestFormResource::collection(RequestForm::where('status','>','0')->orderBy('created_date','desc')->get());
-            	}else{
-                $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
-                    ->where('status','>','0')
-                    ->orderBy('created_date','desc')
-                        ->get();
+                $route = $request->route()->getName();
+                // return $route;
+                if ($route == 'request_forms.index'){
+                    if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('approve',json_decode($user->user_detail->roles))){
+                        try {
+                            return RequestFormResource::collection(RequestForm::where('status','>','0')   
+                            ->where(function($detail_type){
+                                $detail_type->where('detail_type','=','1')
+                                ->orWhereNull('detail_type')
+                                ->get();
+                            })                                                                    
+                            ->orderBy('created_date','desc')
+                            ->get());
+                        } catch (\Throwable $th) {
+                            return $th;
+                        }
+                        
+                    }else{
+                        $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                            ->where('status','>','0')
+                            ->where(function($detail_type){
+                                $detail_type->where('detail_type','=','1')
+                                ->orWhereNull('detail_type')
+                                ->get();
+                            })
+                            ->orderBy('created_date','desc')
+                            ->get();
                         return RequestFormResource::collection($requestForm);
-            	}
+                    }
+                }elseif ($route == 'remote_forms.index'){
+                    
+                    if (in_array('admin',json_decode($user->user_detail->roles)) || in_array('approve',json_decode($user->user_detail->roles))){
+                        return RequestFormResource::collection(RequestForm::where('status','>','0')
+                        ->where('detail_type','=','2')                                                 
+                        ->orderBy('created_date','desc')
+                        ->get());
+                    }else{
+                        $requestForm = RequestForm::where('group_id',$user->user_detail->group_id)
+                            ->where('status','>','0')
+                            ->where('detail_type','=','2')
+                            ->orderBy('created_date','desc')
+                                ->get();
+                                return RequestFormResource::collection($requestForm);
+                    }
+                }
+                
             } catch (\Throwable $th) {
                 return $th;
             }
@@ -279,7 +317,7 @@ class RequestFormController extends Controller
     {
         try {
             if ($request->has('status')){
-                $line_bot = new LineBotController();
+                //$line_bot = new LineBotController();
                 if ($request->status == 2 && $requestForm->status == 1){
                     if ($requestForm->order_no == 0){
                         $order = $this->getDocumentOrder($requestForm);
@@ -299,12 +337,12 @@ class RequestFormController extends Controller
                     $requestStatus = new RequestStatus;
                     $requestForm->request_status()->save($requestStatus);
 
-                    $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> กำลังรอการรับรอง";
-                    $line_bot->forEnsure($requestForm->group_id, $message);
+                    //$message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> กำลังรอการรับรอง";
+                    //$line_bot->forEnsure($requestForm->group_id, $message);
                     return new RequestFormResource($requestForm);
                 }elseif ($request->status == 1 && $requestForm->status == 2){
-                    $message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> ยกเลิกการส่งแล้ว";
-                    $line_bot->forEnsure($requestForm->group_id, $message);
+                    //$message = "เอกสารหมายเลข : " . $requestForm->request_no . "\r\nเรื่อง : "  .  $requestForm->request_title . "\r\n>> ยกเลิกการส่งแล้ว";
+                    //$line_bot->forEnsure($requestForm->group_id, $message);
                 }
             }
             $requestForm->update($request->all());
